@@ -20,4 +20,13 @@ public class GameActivity extends AppCompatActivity{
         client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL));
         client.connect();
     }
+
+
+    //TODO 退出游戏时的销毁逻辑
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    //TODO 监听Back键事件， 弹出对话框，拦截退出请求。
 }

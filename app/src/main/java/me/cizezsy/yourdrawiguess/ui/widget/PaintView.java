@@ -20,6 +20,8 @@ public class PaintView extends SurfaceView {
     private Paint paint;
     private MyWebSocketClient client;
     private List<Step> steps = new ArrayList<>();
+    private float startX;
+    private float startY;
 
     public PaintView(Context context) {
         super(context);
@@ -37,13 +39,36 @@ public class PaintView extends SurfaceView {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    //TODO 设置画笔
+    private void init() {
+        paint = new Paint();
+        canvas = new Canvas();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                startX = event.getX();
+                startY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
+
+                float endX = event.getX();
+                float endY = event.getY();
+
+                //TODO 绘图
+
+                Step step = new Step();
+                step.setStartX(startX);
+                step.setStartY(startY);
+                step.setEndX(endX);
+                step.setEndY(endY);
+                step.setColor(paint.getColor());
+                step.setTextSize(paint.getTextSize());
+
+                steps.add(step);
                 break;
             case MotionEvent.ACTION_UP:
                 break;
