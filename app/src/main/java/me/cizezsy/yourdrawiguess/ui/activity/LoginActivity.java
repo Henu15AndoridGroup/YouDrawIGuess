@@ -4,20 +4,23 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 
-import java.net.URI;
 
-import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
-
-public class GameActivity extends AppCompatActivity{
-
-    private static final String SOCKET_SERVER_URL = "";
-
-    private MyWebSocketClient client;
+public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL));
-        client.connect();
     }
+
+
+    //TODO 向服务器发起登录请求时调用此方法
+    private void login(String username, String password) {
+
+    }
+
+    //TODO 验证输入的正确性
+    private boolean checkInput(String username, String password) {
+        return false;
+    }
+
 }

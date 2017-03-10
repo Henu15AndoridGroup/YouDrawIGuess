@@ -7,18 +7,18 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.util.Map;
 
-public class MyWebScoketCilent extends WebSocketClient {
+public class MyWebSocketClient extends WebSocketClient {
 
 
-    public MyWebScoketCilent(URI serverURI) {
+    public MyWebSocketClient(URI serverURI) {
         super(serverURI);
     }
 
-    public MyWebScoketCilent(URI serverUri, Draft draft) {
+    public MyWebSocketClient(URI serverUri, Draft draft) {
         super(serverUri, draft);
     }
 
-    public MyWebScoketCilent(URI serverUri, Draft draft, Map<String, String> headers, int connecttimeout) {
+    public MyWebSocketClient(URI serverUri, Draft draft, Map<String, String> headers, int connecttimeout) {
         super(serverUri, draft, headers, connecttimeout);
     }
 
