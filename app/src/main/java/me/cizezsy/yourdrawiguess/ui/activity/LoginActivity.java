@@ -65,8 +65,8 @@ public class LoginActivity extends Activity implements OnClickListener {
     private void clickLogin() {
         String phone = phoneEdit.getText().toString();
         String password = passwordEdit.getText().toString();
-        mProgressBar.setVisibility(View.VISIBLE);
         if (checkInput(phone, password)) {
+            mProgressBar.setVisibility(View.VISIBLE);
             YdigRetrofitFactory.getService()
                     .login(phone, password)
                     .subscribeOn(Schedulers.io())
