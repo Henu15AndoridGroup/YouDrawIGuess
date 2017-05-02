@@ -15,8 +15,7 @@ import android.widget.EditText;
 
 public class CleanEditText extends AppCompatEditText {
 	
-	private final String TAG = "editText";
-	
+
 	private Drawable dRight;
 	private Rect rBound;
 

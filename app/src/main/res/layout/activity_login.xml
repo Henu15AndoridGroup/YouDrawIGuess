@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="84dp"
+        android:src="@mipmap/logo"
         android:contentDescription="@string/image_logo"/>
 
     <LinearLayout
@@ -30,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/iv_logo"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="80dp"
         android:orientation="vertical" >
 
         <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
@@ -55,14 +56,14 @@
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_layout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="28dp"
         android:background="@drawable/btn_login_selector"
         android:onClick="onClick"
         android:text="@string/login"
         android:textColor="#5c5c5c"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:layout_below="@+id/input_layout"
+        android:layout_centerHorizontal="true"/>
 
 
     <RelativeLayout
@@ -86,5 +87,13 @@
             android:textSize="12sp" />
 
     </RelativeLayout>
-
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        style="@android:style/Widget.Material.ProgressBar"
+        android:visibility="gone"
+        />
 </RelativeLayout>

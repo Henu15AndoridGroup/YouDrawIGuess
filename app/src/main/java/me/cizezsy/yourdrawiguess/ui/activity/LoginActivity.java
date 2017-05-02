@@ -3,6 +3,7 @@ package me.cizezsy.yourdrawiguess.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -10,9 +11,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.cizezsy.yourdrawiguess.R;
+import me.cizezsy.yourdrawiguess.net.YdigRetrofitFactory;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.util.RegexUtils;
+import me.cizezsy.yourdrawiguess.util.ToastUtils;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static android.view.View.OnClickListener;
 
@@ -22,21 +28,17 @@ public class LoginActivity extends Activity implements OnClickListener {
 
     // 界面控件
     @BindView(R.id.et_email_phone)
-    private CleanEditText accountEdit;
+    CleanEditText phoneEdit;
     @BindView(R.id.et_password)
-    private CleanEditText passwordEdit;
-
-    // 第三方平台获取的访问token，有效时间，uid
-    private String accessToken;
-    private String expires_in;
-    private String uid;
-    private String sns;
-
+    CleanEditText passwordEdit;
+    @BindView(R.id.progressBar)
+    ContentLoadingProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
         initViews();
     }
 
@@ -44,8 +46,8 @@ public class LoginActivity extends Activity implements OnClickListener {
      * 初始化视图
      */
     private void initViews() {
-        accountEdit.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        accountEdit.setTransformationMethod(HideReturnsTransformationMethod
+        phoneEdit.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        phoneEdit.setTransformationMethod(HideReturnsTransformationMethod
                 .getInstance());
         passwordEdit.setImeOptions(EditorInfo.IME_ACTION_DONE);
         passwordEdit.setImeOptions(EditorInfo.IME_ACTION_GO);
@@ -61,10 +63,25 @@ public class LoginActivity extends Activity implements OnClickListener {
     }
 
     private void clickLogin() {
-        String account = accountEdit.getText().toString();
+        String phone = phoneEdit.getText().toString();
         String password = passwordEdit.getText().toString();
-        if (checkInput(account, password)) {
-            // TODO: 请求服务器登录账号
+        mProgressBar.setVisibility(View.VISIBLE);
+        if (checkInput(phone, password)) {
+            YdigRetrofitFactory.getService()
+                    .login(phone, password)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(message -> {
+                        mProgressBar.setVisibility(View.GONE);
+                        if (message.getStatusCode() != 200) {
+                            ToastUtils.showShort(LoginActivity.this, "登录失败" + message.getData());
+                            return;
+                        }
+                        enterMainActivity();
+                    }, throwable -> {
+                        mProgressBar.setVisibility(View.GONE);
+                        ToastUtils.showShort(LoginActivity.this, "登录失败" + throwable.getMessage());
+                    });
         }
     }
 
@@ -112,5 +129,11 @@ public class LoginActivity extends Activity implements OnClickListener {
     private void enterRegister() {
         Intent intent = new Intent(this, SignUpActivity.class);
         startActivityForResult(intent, REQUEST_CODE_TO_REGISTER);
+    }
+
+    private void enterMainActivity() {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

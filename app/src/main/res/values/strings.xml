@@ -30,5 +30,6 @@
     <string name="username">昵称</string>
     <string name="click_create_then_agree">点击“创建账号”即同意</string>
     <string name="cancel_img">cancel_img</string>
+    <string name="please_enter_your_username">请输入你的用户名</string>
 
 </resources>

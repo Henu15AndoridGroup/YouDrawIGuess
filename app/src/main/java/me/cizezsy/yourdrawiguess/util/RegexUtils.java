@@ -1,6 +1,5 @@
 package me.cizezsy.yourdrawiguess.util;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**

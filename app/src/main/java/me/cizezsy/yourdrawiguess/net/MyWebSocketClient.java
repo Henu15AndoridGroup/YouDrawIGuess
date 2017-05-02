@@ -1,5 +1,8 @@
 package me.cizezsy.yourdrawiguess.net;
 
+import android.app.Activity;
+import android.util.Log;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
@@ -7,19 +10,19 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 import java.util.Map;
 
+import me.cizezsy.yourdrawiguess.model.Step;
+import me.cizezsy.yourdrawiguess.model.WebSocketMessage;
+import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
+import me.cizezsy.yourdrawiguess.util.JsonUtils;
+
 public class MyWebSocketClient extends WebSocketClient {
 
+    private PaintView mPaintView;
+    private Activity mActivity;
 
-    public MyWebSocketClient(URI serverURI) {
+    public MyWebSocketClient(URI serverURI, Activity activity) {
         super(serverURI);
-    }
-
-    public MyWebSocketClient(URI serverUri, Draft draft) {
-        super(serverUri, draft);
-    }
-
-    public MyWebSocketClient(URI serverUri, Draft draft, Map<String, String> headers, int connectTimeout) {
-        super(serverUri, draft, headers, connectTimeout);
+        this.mActivity = activity;
     }
 
     @Override
@@ -28,6 +31,23 @@ public class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
+        WebSocketMessage webSocketMessage = JsonUtils.fromJson(message, WebSocketMessage.class);
+        String data = webSocketMessage.getData();
+        switch (webSocketMessage.getType()) {
+            case 0:
+                break;
+            case 1:
+                Log.d("Num", data);
+                break;
+            case 2:
+                Step step = JsonUtils.fromJson(data, Step.class);
+                mActivity.runOnUiThread(() -> {
+                    mPaintView.refreshPath(step);
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -38,5 +58,9 @@ public class MyWebSocketClient extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
 
+    }
+
+    public void setPaintView(PaintView paintView) {
+        mPaintView = paintView;
     }
 }

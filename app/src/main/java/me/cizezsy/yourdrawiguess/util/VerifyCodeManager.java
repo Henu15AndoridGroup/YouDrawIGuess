@@ -11,6 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import me.cizezsy.yourdrawiguess.R;
+import me.cizezsy.yourdrawiguess.net.YdigRetrofitFactory;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class VerifyCodeManager {
 	
@@ -25,12 +28,12 @@ public class VerifyCodeManager {
 	private String phone;
 	
 	private EditText phoneEdit;
-	private Button getVerifiCodeButton;
+	private Button getVerificationCodeButton;
 	
 	public VerifyCodeManager(Context context, EditText editText, Button btn) {
 		this.mContext = context;
 		this.phoneEdit = editText;
-		this.getVerifiCodeButton = btn;
+		this.getVerificationCodeButton = btn;
 	}
 
 	public void getVerifyCode(int type) {
@@ -49,9 +52,7 @@ public class VerifyCodeManager {
 			return;
 		}
 
-		// 2. 请求服务端，由服务端为客户端发送验证码
-//		HttpRequestHelper.getInstance().getVerifyCode(mContext, phone, type,
-//				getVerifyCodeHandler);
+		sendVerificationCode();
 
 		TimerTask task = new TimerTask() {
 			@Override
@@ -70,22 +71,34 @@ public class VerifyCodeManager {
 
 	}
 
+	private void sendVerificationCode() {
+		YdigRetrofitFactory.getService()
+				.getVerificationCode(phone)
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribeOn(Schedulers.io())
+				.subscribe(message -> {
+                    if (message.getStatusCode() != 200) {
+                        ToastUtils.showShort(mContext, "获取验证码失败" + message.getData());
+                    }
+                }, throwable -> ToastUtils.showShort(mContext, "获取验证码失败" + throwable.getMessage()));
+	}
+
 	private void setButtonStatusOff() {
-		getVerifiCodeButton.setText(String.format(
+		getVerificationCodeButton.setText(String.format(
 				mContext.getResources().getString(R.string.count_down), recLen+""));
 		recLen--;
-		getVerifiCodeButton.setClickable(false);
-		getVerifiCodeButton.setTextColor(Color.parseColor("#f3f4f8"));
-		getVerifiCodeButton.setBackgroundColor(Color.parseColor("#b1b1b3"));
+		getVerificationCodeButton.setClickable(false);
+		getVerificationCodeButton.setTextColor(Color.parseColor("#f3f4f8"));
+		getVerificationCodeButton.setBackgroundColor(Color.parseColor("#b1b1b3"));
 	}
 
 	private void setButtonStatusOn() {
 		timer.cancel();
-		getVerifiCodeButton.setText("重新发送");
-		getVerifiCodeButton.setTextColor(Color.parseColor("#b1b1b3"));
-		getVerifiCodeButton.setBackgroundColor(Color.parseColor("#f3f4f8"));
+		getVerificationCodeButton.setText("重新发送");
+		getVerificationCodeButton.setTextColor(Color.parseColor("#b1b1b3"));
+		getVerificationCodeButton.setBackgroundColor(Color.parseColor("#f3f4f8"));
 		recLen = 60;
-		getVerifiCodeButton.setClickable(true);
+		getVerificationCodeButton.setClickable(true);
 	}
 
 }

@@ -22,7 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="84dp"
+        android:src="@mipmap/logo"
          />
+
 
     <RelativeLayout
         android:id="@+id/layout_phone"
@@ -57,9 +59,19 @@
     </RelativeLayout>
 
     <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
-        android:id="@+id/et_password"
+        android:id="@+id/et_nickname"
         style="@style/login_edit_style"
         android:layout_below="@+id/et_verifiCode"
+        android:layout_marginTop="10dp"
+        android:maxLength="32"
+        android:maxLines="1"
+        android:hint="@string/username"
+        android:inputType="text" />
+
+    <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
+        android:id="@+id/et_password"
+        style="@style/login_edit_style"
+        android:layout_below="@+id/et_nickname"
         android:layout_marginTop="0.5dp"
         android:ems="10"
         android:hint="@string/password"
@@ -74,21 +86,13 @@
         android:hint="@string/verification_code"
         android:inputType="number" />
 
-    <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
-        android:id="@+id/et_nickname"
-        style="@style/login_edit_style"
-        android:layout_below="@+id/et_password"
-        android:layout_marginTop="10dp"
-        android:maxLength="32"
-        android:maxLines="1"
-        android:hint="@string/username"
-        android:inputType="text" />
+
 
     <Button
         android:id="@+id/btn_create_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_nickname"
+        android:layout_below="@+id/et_password"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
@@ -122,5 +126,13 @@
             android:textColor="#5c5c5c"
             android:textSize="12sp" />
     </LinearLayout>
-
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        style="@android:style/Widget.Material.ProgressBar"
+        android:visibility="gone"
+        />
 </RelativeLayout>
