@@ -15,7 +15,7 @@ import me.cizezsy.yourdrawiguess.net.YdigRetrofitFactory;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class VerifyCodeManager {
+public class VerificationCodeManager {
 	
 	public final static int REGISTER = 1;
 	public final static int RESET_PWD = 2;
@@ -30,7 +30,7 @@ public class VerifyCodeManager {
 	private EditText phoneEdit;
 	private Button getVerificationCodeButton;
 	
-	public VerifyCodeManager(Context context, EditText editText, Button btn) {
+	public VerificationCodeManager(Context context, EditText editText, Button btn) {
 		this.mContext = context;
 		this.phoneEdit = editText;
 		this.getVerificationCodeButton = btn;

@@ -17,7 +17,7 @@ import me.cizezsy.yourdrawiguess.net.YdigRetrofitFactory;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.util.RegexUtils;
 import me.cizezsy.yourdrawiguess.util.ToastUtils;
-import me.cizezsy.yourdrawiguess.util.VerifyCodeManager;
+import me.cizezsy.yourdrawiguess.util.VerificationCodeManager;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -39,7 +39,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
     @BindView(R.id.progressBar)
     ContentLoadingProgressBar mProgressBar;
 
-    private VerifyCodeManager codeManager;
+    private VerificationCodeManager codeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
         initViews();
-        codeManager = new VerifyCodeManager(this, phoneEdit, getVerificationCodeButton);
+        codeManager = new VerificationCodeManager(this, phoneEdit, getVerificationCodeButton);
 
     }
 
@@ -123,8 +123,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send_verifi_code:
-                // TODO 请求接口发送验证码
-                codeManager.getVerifyCode(VerifyCodeManager.REGISTER);
+                codeManager.getVerifyCode(VerificationCodeManager.REGISTER);
                 break;
 
             default:

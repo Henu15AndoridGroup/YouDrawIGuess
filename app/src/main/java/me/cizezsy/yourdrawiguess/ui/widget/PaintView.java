@@ -83,7 +83,6 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 break;
         }
 
-
         new Thread(() -> client.send(JsonUtils.toJson(client)));
 
         steps.add(step);
