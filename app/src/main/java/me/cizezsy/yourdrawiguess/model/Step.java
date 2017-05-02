@@ -6,6 +6,8 @@ public class Step {
     private float startY;
     private float endX;
     private float endY;
+    private float deviceWidth;
+    private float deviceHeight;
     private float textSize;
     private int color;
 
@@ -39,6 +41,22 @@ public class Step {
 
     public void setEndY(float endY) {
         this.endY = endY;
+    }
+
+    public float getDeviceWidth() {
+        return deviceWidth;
+    }
+
+    public void setDeviceWidth(float deviceWidth) {
+        this.deviceWidth = deviceWidth;
+    }
+
+    public float getDeviceHeight() {
+        return deviceHeight;
+    }
+
+    public void setDeviceHeight(float deviceHeight) {
+        this.deviceHeight = deviceHeight;
     }
 
     public float getTextSize() {

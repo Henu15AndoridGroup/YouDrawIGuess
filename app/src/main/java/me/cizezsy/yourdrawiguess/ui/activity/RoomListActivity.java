@@ -21,7 +21,6 @@ public class RoomListActivity extends AppCompatActivity {
 
 
     private void initView() {
-
     }
 
 

@@ -65,6 +65,8 @@ public class PaintView extends SurfaceView {
                 step.setStartY(startY);
                 step.setEndX(endX);
                 step.setEndY(endY);
+                step.setDeviceHeight(getHeight());
+                step.setDeviceWidth(getWidth());
                 step.setColor(paint.getColor());
                 step.setTextSize(paint.getTextSize());
 

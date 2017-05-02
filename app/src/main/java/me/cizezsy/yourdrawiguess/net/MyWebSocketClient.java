@@ -18,18 +18,16 @@ public class MyWebSocketClient extends WebSocketClient {
         super(serverUri, draft);
     }
 
-    public MyWebSocketClient(URI serverUri, Draft draft, Map<String, String> headers, int connecttimeout) {
-        super(serverUri, draft, headers, connecttimeout);
+    public MyWebSocketClient(URI serverUri, Draft draft, Map<String, String> headers, int connectTimeout) {
+        super(serverUri, draft, headers, connectTimeout);
     }
 
     @Override
-    public void onOpen(ServerHandshake handshakedata) {
-
+    public void onOpen(ServerHandshake handshakeData) {
     }
 
     @Override
     public void onMessage(String message) {
-
     }
 
     @Override
