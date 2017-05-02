@@ -9,11 +9,11 @@ import rx.Observable;
 
 public interface YdigRetrofitApi {
     @FormUrlEncoded
-    @POST("signUp")
+    @POST("signup")
     Observable<Message> getVerificationCode(@Field("phone") String phone);
 
     @FormUrlEncoded
-    @POST("signUp")
+    @POST("signup")
     Observable<Message> signUp(@Field("username") String username,
                                @Field("password") String password,
                                @Field("phone") String phone,

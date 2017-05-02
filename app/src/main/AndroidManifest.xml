@@ -13,13 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.activity.SplashActivity">
-
-        </activity>
-        <activity android:name=".ui.activity.WelcomeGuideActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.activity.WelcomeGuideActivity">
+
         </activity>
         <activity android:name=".ui.activity.LoginActivity"/>
         <activity android:name=".ui.activity.SignUpActivity"/>

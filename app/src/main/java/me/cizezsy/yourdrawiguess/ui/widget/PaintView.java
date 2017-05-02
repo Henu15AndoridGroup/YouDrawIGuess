@@ -35,9 +35,6 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
     private MyWebSocketClient client;
     private List<Step> steps = new ArrayList<>();
 
-    private float x;
-    private float y;
-
 
     public PaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -60,8 +57,8 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         if(!isToMe)
             return true;
 
-        x = event.getX();
-        y = event.getY();
+        float x = event.getX();
+        float y = event.getY();
 
         Step step = new Step();
         step.setX(x);
@@ -141,6 +138,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     public void refreshPath(Step step) {
+        steps.add(step);
         float x = (getWidth() / step.getDeviceWidth()) * step.getX();
         float y = (getHeight() / step.getDeviceHeight()) * step.getY();
 
@@ -151,7 +149,13 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         }
     }
 
+
+    public void refreshPath(List<Step> stepList) {
+        stepList.forEach(this::refreshPath);
+    }
+
     public void setToMe(boolean toMe) {
         isToMe = toMe;
     }
+
 }

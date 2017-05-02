@@ -14,7 +14,7 @@ import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 
 public class GameActivity extends AppCompatActivity{
 
-    private static final String SOCKET_SERVER_URL = "ws://115.159.49.186:8080/ydig/draw";
+    private static final String SOCKET_SERVER_URL = "ws://115.159.49.186:8080/ydig2/draw";
 
     private MyWebSocketClient client;
 

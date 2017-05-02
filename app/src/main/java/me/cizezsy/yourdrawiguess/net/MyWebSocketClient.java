@@ -3,11 +3,16 @@ package me.cizezsy.yourdrawiguess.net;
 import android.app.Activity;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import me.cizezsy.yourdrawiguess.model.Step;
@@ -41,9 +46,15 @@ public class MyWebSocketClient extends WebSocketClient {
                 break;
             case 2:
                 Step step = JsonUtils.fromJson(data, Step.class);
-                mActivity.runOnUiThread(() -> {
-                    mPaintView.refreshPath(step);
-                });
+                mActivity.runOnUiThread(() -> mPaintView.refreshPath(step));
+                break;
+            case 4:
+                mPaintView.setToMe(true);
+                break;
+            case 5:
+                Type stepListType = new TypeToken<ArrayList<Step>>(){}.getType();
+                List<Step> stepList = JsonUtils.fromJson(data, stepListType);
+                mActivity.runOnUiThread(() -> mPaintView.refreshPath(stepList));
                 break;
             default:
                 break;

@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class YdigRetrofit {
     private final YdigRetrofitApi mService;
 
-    private static final String BASE_URL = "http://115.159.49.186:8080/ydig/";
+    private static final String BASE_URL = "http://115.159.49.186:8080/ydig2/";
 
     public YdigRetrofit() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
