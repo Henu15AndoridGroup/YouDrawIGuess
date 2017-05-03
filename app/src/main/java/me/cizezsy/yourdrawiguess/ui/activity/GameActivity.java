@@ -49,7 +49,7 @@ public class GameActivity extends AppCompatActivity {
 
     //TODO 退出游戏时的销毁逻辑
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         super.onDestroy();
         client.close();
     }
