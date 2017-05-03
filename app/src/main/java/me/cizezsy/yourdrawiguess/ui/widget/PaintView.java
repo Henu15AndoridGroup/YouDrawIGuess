@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -13,7 +14,10 @@ import android.view.SurfaceView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import me.cizezsy.yourdrawiguess.model.Step;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
@@ -22,7 +26,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 //绘图view
-public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
+public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     private SurfaceHolder mSurfaceHolder;
     private Canvas mCanvas;
@@ -34,6 +38,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
     private MyWebSocketClient client;
     private List<Step> steps = new ArrayList<>();
+    private volatile LinkedBlockingQueue<Step> mStepQueue = new LinkedBlockingQueue<>();
 
 
     public PaintView(Context context, AttributeSet attrs) {
@@ -47,6 +52,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         setFocusable(true);
         setFocusableInTouchMode(true);
         setKeepScreenOn(true);
+        startSendStepTask();
     }
 
 
@@ -54,7 +60,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
 
-        if(!isToMe)
+        if (!isToMe)
             return true;
 
         float x = event.getX();
@@ -83,8 +89,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 break;
         }
 
-        new Thread(() -> client.send(JsonUtils.toJson(client)));
-
+        mStepQueue.add(step);
         steps.add(step);
         return true;
     }
@@ -110,7 +115,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
     public void setClient(MyWebSocketClient client) {
         this.client = client;
-
+        client.setPaintView(this);
     }
 
     @Override
@@ -141,20 +146,36 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         float x = (getWidth() / step.getDeviceWidth()) * step.getX();
         float y = (getHeight() / step.getDeviceHeight()) * step.getY();
 
-        if(step.getType() == 0) {
+        if (step.getType() == 0) {
             mPath.moveTo(x, y);
-        } else if(step.getType() == 1) {
+        } else if (step.getType() == 1) {
             mPath.lineTo(x, y);
         }
     }
 
 
     public void refreshPath(List<Step> stepList) {
-        stepList.forEach(this::refreshPath);
+        for (Step s : stepList) {
+            refreshPath(s);
+        }
     }
 
     public void setToMe(boolean toMe) {
         isToMe = toMe;
+    }
+
+
+    public void startSendStepTask() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    String json = JsonUtils.toJson(mStepQueue.take());
+                    client.send(json);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 }

@@ -1,14 +1,14 @@
 package me.cizezsy.yourdrawiguess.model;
 
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 public class WebSocketMessage {
     @SerializedName("type")
     private int type;
     @SerializedName("data")
-    private String data;
-
+    private JsonElement data;
 
     public int getType() {
         return type;
@@ -18,11 +18,11 @@ public class WebSocketMessage {
         this.type = type;
     }
 
-    public String getData() {
+    public JsonElement getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(JsonElement data) {
         this.data = data;
     }
 }

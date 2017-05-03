@@ -1,6 +1,7 @@
 package me.cizezsy.yourdrawiguess.util;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import java.lang.reflect.Type;
 
@@ -18,5 +19,13 @@ public class JsonUtils {
 
     public static <T> T fromJson(String data, Type type) {
         return sGson.fromJson(data, type);
+    }
+
+    public static <T> T fromJson(JsonElement json, Class<T> c){
+        return sGson.fromJson(json, c);
+    }
+
+    public static <T> T fromJson(JsonElement json, Type type) {
+        return sGson.fromJson(json, type);
     }
 }
