@@ -6,24 +6,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import me.cizezsy.yourdrawiguess.model.PlayerMessage;
 import me.cizezsy.yourdrawiguess.model.Step;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
-import rx.Observable;
-import rx.Subscriber;
 
 //绘图view
 public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
@@ -169,7 +163,9 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         new Thread(() -> {
             while (true) {
                 try {
-                    String json = JsonUtils.toJson(mStepQueue.take());
+                    Step step = mStepQueue.take();
+                    PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.DRAW, step);
+                    String json = JsonUtils.toJson(message);
                     client.send(json);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

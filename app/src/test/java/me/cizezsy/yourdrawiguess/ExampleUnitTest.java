@@ -1,6 +1,10 @@
 package me.cizezsy.yourdrawiguess;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import me.cizezsy.yourdrawiguess.model.PlayerMessage;
+import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +16,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+        String json = JsonUtils.toJson(new PlayerMessage<>(PlayerMessage.Type.DRAW, "sadasd"));
+        System.out.println(json);
     }
 }

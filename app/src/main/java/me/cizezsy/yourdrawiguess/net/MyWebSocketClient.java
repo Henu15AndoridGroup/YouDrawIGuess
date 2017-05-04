@@ -14,20 +14,27 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import me.cizezsy.yourdrawiguess.model.Step;
-import me.cizezsy.yourdrawiguess.model.WebSocketMessage;
+import me.cizezsy.yourdrawiguess.model.GameMessage;
 import me.cizezsy.yourdrawiguess.ui.activity.GameActivity;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
 public class MyWebSocketClient extends WebSocketClient {
 
+    private final static int NONE = 0;
+    private final static int PLAYER_CHANGE = 1;
+    private final static int DRAW = 3;
+    private final static int TO_ME = 4;
+    private final static int RESUME = 5;
+
     private PaintView mPaintView;
     private Activity mActivity;
 
-    public MyWebSocketClient(URI serverURI, Activity activity) {
-        super(serverURI, new Draft_17());
+    public MyWebSocketClient(URI serverURI, Map<String, String> header, Activity activity) {
+        super(serverURI, new Draft_17(), header, 12000);
         this.mActivity = activity;
     }
 
@@ -42,28 +49,28 @@ public class MyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        WebSocketMessage webSocketMessage = JsonUtils.fromJson(message, WebSocketMessage.class);
-        JsonElement data = webSocketMessage.getData();
+        GameMessage gameMessage = JsonUtils.fromJson(message, GameMessage.class);
+        JsonElement data = gameMessage.getData();
         Log.d("webSocket", "message" + data);
         try {
-            switch (webSocketMessage.getType()) {
-                case 0:
+            switch (gameMessage.getType()) {
+                case NONE:
                     break;
-                case 1:
+                case PLAYER_CHANGE:
                     Integer playerNum = JsonUtils.fromJson(data, Integer.class);
                     mActivity.runOnUiThread(() -> {
                         ((GameActivity) mActivity).setPlayerNumber(playerNum);
                     });
                     Log.d("webSocket", "Player number: " + playerNum);
                     break;
-                case 2:
+                case DRAW:
                     Step step = JsonUtils.fromJson(data, Step.class);
                     mActivity.runOnUiThread(() -> mPaintView.refreshPath(step));
                     break;
-                case 4:
+                case TO_ME:
                     mPaintView.setToMe(true);
                     break;
-                case 5:
+                case RESUME:
                     Type stepListType = new TypeToken<ArrayList<Step>>() {
                     }.getType();
                     List<Step> stepList = JsonUtils.fromJson(data, stepListType);

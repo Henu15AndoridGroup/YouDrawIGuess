@@ -7,13 +7,21 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.java_websocket.client.WebSocketClient;
+
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.cizezsy.yourdrawiguess.R;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
+import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -39,7 +47,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void init() {
-        client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL), this);
+        List<Cookie> cookieList = YdigRetrofit.cookieStore;
+        StringBuilder sb = new StringBuilder();
+        cookieList.forEach(c -> sb.append(c.toString()));
+        Map<String, String> cookie = new HashMap<>();
+        cookie.put("Cookie", sb.toString());
+        client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL), cookie, this);
         mPaintView.setClient(client);
         mPaintView.setEnabled(false);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -50,7 +63,7 @@ public class GameActivity extends AppCompatActivity {
     //TODO 退出游戏时的销毁逻辑
     @Override
     protected void onStop() {
-        super.onDestroy();
+        super.onStop();
         client.close();
     }
 
