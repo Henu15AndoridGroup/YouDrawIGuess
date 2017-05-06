@@ -32,7 +32,7 @@ public class PlayerMessage<T> {
         @SerializedName("1")
         DRAW,
         @SerializedName("2")
-        MEEESAGE
+        MESSAGE
     }
 
 

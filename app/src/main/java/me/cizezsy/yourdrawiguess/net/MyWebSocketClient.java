@@ -29,6 +29,7 @@ public class MyWebSocketClient extends WebSocketClient {
     private final static int DRAW = 3;
     private final static int TO_ME = 4;
     private final static int RESUME = 5;
+    private final static int CHAT = 6;
 
     private PaintView mPaintView;
     private Activity mActivity;
@@ -75,6 +76,9 @@ public class MyWebSocketClient extends WebSocketClient {
                     }.getType();
                     List<Step> stepList = JsonUtils.fromJson(data, stepListType);
                     mActivity.runOnUiThread(() -> mPaintView.refreshPath(stepList));
+                    break;
+                case CHAT:
+                    //TODO 服务器传入用户名和聊天信息
                     break;
                 default:
                     break;

@@ -19,14 +19,51 @@
             android:textSize="16sp"
             tools:text="0"
             />
+
+        <TextView
+            android:id="@+id/tv_player_mes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            tools:text="0"
+            />
     </RelativeLayout>
 
     <me.cizezsy.yourdrawiguess.ui.widget.PaintView
         android:id="@+id/pv_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/bottom_message"
         android:layout_below="@+id/rl_game_header_info"
         />
+
+    <RelativeLayout
+        android:id="@+id/bottom_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
+            android:id="@+id/et_chat_message"
+            style="@style/login_edit_style"
+            android:hint="@string/send_message"
+            android:layout_toStartOf="@id/btn_send_chat_mes"
+            android:inputType="text"
+            />
+
+        <Button
+            style="@android:style/Widget.Material.Button"
+            android:id="@+id/btn_send_chat_mes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="@string/send"
+            />
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/pb_game"

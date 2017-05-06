@@ -1,13 +1,12 @@
 package me.cizezsy.yourdrawiguess.ui.activity;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import org.java_websocket.client.WebSocketClient;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -17,11 +16,13 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.cizezsy.yourdrawiguess.R;
+import me.cizezsy.yourdrawiguess.model.PlayerMessage;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
+import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
+import me.cizezsy.yourdrawiguess.util.JsonUtils;
 import okhttp3.Cookie;
-import okhttp3.HttpUrl;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -38,6 +39,15 @@ public class GameActivity extends AppCompatActivity {
     @BindView(R.id.tv_player_num)
     TextView mPlayerTv;
 
+    @BindView(R.id.tv_player_mes)
+    TextView mMessageTv;
+
+    @BindView(R.id.et_chat_message)
+    CleanEditText mChatEt;
+
+    @BindView(R.id.btn_send_chat_mes)
+    Button mMessageBtn;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,16 +57,26 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void init() {
+
         List<Cookie> cookieList = YdigRetrofit.cookieStore;
         StringBuilder sb = new StringBuilder();
         cookieList.forEach(c -> sb.append(c.toString()));
         Map<String, String> cookie = new HashMap<>();
         cookie.put("Cookie", sb.toString());
         client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL), cookie, this);
+
         mPaintView.setClient(client);
         mPaintView.setEnabled(false);
         mProgressBar.setVisibility(View.VISIBLE);
         client.connect();
+
+        mMessageBtn.setOnClickListener(v -> {
+            String chatMes = mChatEt.getText().toString();
+            if (TextUtils.isEmpty(chatMes))
+                return;
+            PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chatMes);
+            client.send(JsonUtils.toJson(message));
+        });
     }
 
 
@@ -74,6 +94,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setPlayerNumber(int peopleNumber) {
-        mPlayerTv.setText("当前游戏人数" + peopleNumber);
+        mPlayerTv.setText("当前游戏人数 :" + peopleNumber);
+    }
+
+    public void setPlayerMessage(String message) {
+        mMessageTv.setText(message);
     }
 }
