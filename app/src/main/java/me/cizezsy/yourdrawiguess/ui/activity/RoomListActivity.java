@@ -11,7 +11,8 @@ import me.cizezsy.yourdrawiguess.model.Room;
 
 public class RoomListActivity extends AppCompatActivity {
 
-    List<Room> roomList = new ArrayList<>();
+    private List<Room> roomList = new ArrayList<>();
+    int page;
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
@@ -24,7 +25,7 @@ public class RoomListActivity extends AppCompatActivity {
     }
 
 
-    //TODO SwipeRefreshLayout的刷新事件调用此方法
+    //TODO 刷新数据时调用
     private void onRefresh() {
 
     }

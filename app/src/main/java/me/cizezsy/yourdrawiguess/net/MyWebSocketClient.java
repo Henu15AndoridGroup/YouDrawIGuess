@@ -98,6 +98,7 @@ public class MyWebSocketClient extends WebSocketClient {
                     break;
                 case CHAT:
                     Chat chat = JsonUtils.fromJson(data, Chat.class);
+                    //TODO 每次的聊天信息会在此处转化为Chat对象，使用链表将其存储
                     mActivity.runOnUiThread(() -> ((GameActivity) mActivity).setPlayerMessage(chat.getUsername() + ": " + chat.getContent()));
                     break;
                 default:

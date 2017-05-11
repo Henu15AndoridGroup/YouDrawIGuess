@@ -79,6 +79,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
         String code = verifyCodeEdit.getText().toString().trim();
 
         if (checkInput(phone, username, password, code)) {
+            //TODO 加密密码
             mProgressBar.setVisibility(View.VISIBLE);
             YdigRetrofitFactory.getService()
                     .signUp(username, password, phone, code)
