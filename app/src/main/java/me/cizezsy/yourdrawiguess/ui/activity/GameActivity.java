@@ -63,7 +63,9 @@ public class GameActivity extends AppCompatActivity {
 
         List<Cookie> cookieList = YdigRetrofit.cookieStore;
         StringBuilder sb = new StringBuilder();
-        cookieList.forEach(c -> sb.append(c.toString()));
+        for(Cookie c : cookieList) {
+            sb.append(c.toString());
+        }
         Map<String, String> cookie = new HashMap<>();
         cookie.put("Cookie", sb.toString());
         client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL), cookie, this);
