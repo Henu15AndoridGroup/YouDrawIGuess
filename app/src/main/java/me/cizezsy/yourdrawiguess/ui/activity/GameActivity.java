@@ -1,8 +1,10 @@
 package me.cizezsy.yourdrawiguess.ui.activity;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -63,7 +65,7 @@ public class GameActivity extends AppCompatActivity {
 
         List<Cookie> cookieList = YdigRetrofit.cookieStore;
         StringBuilder sb = new StringBuilder();
-        for(Cookie c : cookieList) {
+        for (Cookie c : cookieList) {
             sb.append(c.toString());
         }
         Map<String, String> cookie = new HashMap<>();
@@ -98,6 +100,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     //TODO 监听Back键事件， 弹出对话框，拦截退出请求。
+
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定", (dialog, which) -> finish())
+                .setTitle("是否退出")
+                .create().show();
+    }
 
     public void hiddenProgressBar() {
         mProgressBar.setVisibility(View.GONE);
