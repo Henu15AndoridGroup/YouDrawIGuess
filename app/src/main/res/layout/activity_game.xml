@@ -29,14 +29,14 @@
             android:textColor="@android:color/black"
             android:textSize="16sp"
             tools:text="0"
-            />
+            tools:ignore="RelativeOverlap"/>
     </RelativeLayout>
 
     <me.cizezsy.yourdrawiguess.ui.widget.PaintView
         android:id="@+id/pv_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_message"
+        android:layout_above="@+id/bottom_message"
         android:layout_below="@+id/rl_game_header_info"
         />
 
@@ -50,7 +50,7 @@
             android:id="@+id/et_chat_message"
             style="@style/login_edit_style"
             android:hint="@string/send_message"
-            android:layout_toStartOf="@id/btn_send_chat_mes"
+            android:layout_toStartOf="@+id/btn_send_chat_mes"
             android:inputType="text"
             />
 

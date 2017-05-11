@@ -15,8 +15,11 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.cizezsy.yourdrawiguess.MyApplication;
 import me.cizezsy.yourdrawiguess.R;
+import me.cizezsy.yourdrawiguess.model.Chat;
 import me.cizezsy.yourdrawiguess.model.PlayerMessage;
+import me.cizezsy.yourdrawiguess.model.User;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
@@ -74,8 +77,13 @@ public class GameActivity extends AppCompatActivity {
             String chatMes = mChatEt.getText().toString();
             if (TextUtils.isEmpty(chatMes))
                 return;
-            PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chatMes);
-            client.send(JsonUtils.toJson(message));
+            Chat chat = new Chat();
+            User user = MyApplication.getUser();
+            chat.setUsername(user == null ? "未知" : user.getUsername());
+            chat.setContent(chatMes);
+            PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chat);
+            mChatEt.setText("");
+            new Thread(() -> client.send(JsonUtils.toJson(message))).start();
         });
     }
 

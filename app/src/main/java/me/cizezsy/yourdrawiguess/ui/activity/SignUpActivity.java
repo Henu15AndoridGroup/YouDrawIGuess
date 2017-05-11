@@ -12,7 +12,9 @@ import android.widget.Button;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.cizezsy.yourdrawiguess.MyApplication;
 import me.cizezsy.yourdrawiguess.R;
+import me.cizezsy.yourdrawiguess.model.User;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofitFactory;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.util.RegexUtils;
@@ -89,6 +91,10 @@ public class SignUpActivity extends Activity implements OnClickListener {
                             return;
                         }
                         ToastUtils.showShort(SignUpActivity.this, "注册成功");
+                        User user = new User();
+                        user.setUsername(username);
+                        user.setPhone(phone);
+                        MyApplication.setUser(user);
                         enterMainActivity();
                     }, throwable -> {
                         mProgressBar.setVisibility(View.GONE);

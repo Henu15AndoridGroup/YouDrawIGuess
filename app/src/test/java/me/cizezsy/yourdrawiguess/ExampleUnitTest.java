@@ -3,7 +3,9 @@ package me.cizezsy.yourdrawiguess;
 import org.junit.Assert;
 import org.junit.Test;
 
+import me.cizezsy.yourdrawiguess.model.Chat;
 import me.cizezsy.yourdrawiguess.model.PlayerMessage;
+import me.cizezsy.yourdrawiguess.model.Step;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
 import static org.junit.Assert.*;
@@ -16,7 +18,10 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        String json = JsonUtils.toJson(new PlayerMessage<>(PlayerMessage.Type.DRAW, "sadasd"));
+        Chat chat = new Chat();
+        chat.setContent("asd");
+        chat.setUsername("asd");
+        String json = JsonUtils.toJson(new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chat));
         System.out.println(json);
     }
 }

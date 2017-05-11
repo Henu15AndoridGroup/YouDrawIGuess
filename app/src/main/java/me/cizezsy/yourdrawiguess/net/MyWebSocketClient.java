@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import me.cizezsy.yourdrawiguess.model.Chat;
 import me.cizezsy.yourdrawiguess.model.Step;
 import me.cizezsy.yourdrawiguess.model.GameMessage;
 import me.cizezsy.yourdrawiguess.ui.activity.GameActivity;
@@ -23,7 +24,6 @@ import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
 public class MyWebSocketClient extends WebSocketClient {
-
     private final static int NONE = 0;
     private final static int PLAYER_CHANGE = 1;
     private final static int DRAW = 3;
@@ -78,7 +78,8 @@ public class MyWebSocketClient extends WebSocketClient {
                     mActivity.runOnUiThread(() -> mPaintView.refreshPath(stepList));
                     break;
                 case CHAT:
-                    //TODO 服务器传入用户名和聊天信息
+                    Chat chat = JsonUtils.fromJson(data, Chat.class);
+                    mActivity.runOnUiThread(()-> ((GameActivity) mActivity).setPlayerMessage(chat.getUsername() + ": " + chat.getContent()));
                     break;
                 default:
                     break;
