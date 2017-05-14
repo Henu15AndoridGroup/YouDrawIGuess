@@ -4,20 +4,13 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -35,6 +28,7 @@ import me.cizezsy.yourdrawiguess.model.User;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
 import me.cizezsy.yourdrawiguess.ui.fragment.ChatFragment;
+import me.cizezsy.yourdrawiguess.ui.fragment.GameSettingFragment;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
@@ -58,11 +52,16 @@ public class GameActivity extends AppCompatActivity {
     CleanEditText mChatEt;
     @BindView(R.id.btn_send_chat_mes)
     Button mMessageBtn;
-    @BindView(R.id.fragment_layout)
+    @BindView(R.id.fragment_container_mes)
     FrameLayout mChatFragmentContainer;
+    @BindView(R.id.fragment_container_setting)
+    FrameLayout mGameSettingFragmentContainer;
+
     Fragment mChatFragment;
+    Fragment mGameSettingFragment;
 
     private boolean isChatFragmentOpen = false;
+    private boolean isGameSettingFragmentOpen = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,11 +87,18 @@ public class GameActivity extends AppCompatActivity {
         client.connect();
 
         FragmentManager fm = getSupportFragmentManager();
-        mChatFragment = fm.findFragmentById(R.id.fragment_layout);
+        mChatFragment = fm.findFragmentById(R.id.fragment_container_mes);
         if (mChatFragment == null) {
             mChatFragment = new ChatFragment();
-            fm.beginTransaction().add(R.id.fragment_layout, mChatFragment).commit();
+            fm.beginTransaction().add(R.id.fragment_container_mes, mChatFragment).commit();
         }
+
+        mGameSettingFragment = fm.findFragmentById(R.id.fragment_container_setting);
+        if (mGameSettingFragment == null) {
+            mGameSettingFragment = new GameSettingFragment();
+            fm.beginTransaction().add(R.id.fragment_container_setting, mGameSettingFragment).commit();
+        }
+
 
         mMessageBtn.setOnClickListener(v -> {
             String chatMes = mChatEt.getText().toString();
@@ -157,6 +163,21 @@ public class GameActivity extends AppCompatActivity {
 //
 //            animation.startNow();
 //            isChatFragmentOpen = !isChatFragmentOpen;
+        });
+
+        mPlayerTv.setOnClickListener(v -> {
+            if (mGameSettingFragment == null || mGameSettingFragmentContainer == null)
+                return;
+            ObjectAnimator mover;
+            if (isGameSettingFragmentOpen) {
+                mover = ObjectAnimator.ofFloat(mGameSettingFragmentContainer, "translationX", 0.0f, mGameSettingFragmentContainer.getWidth());
+            } else {
+                mover = ObjectAnimator.ofFloat(mGameSettingFragmentContainer, "translationX", 0.0f, -mGameSettingFragmentContainer.getWidth());
+
+            }
+            mover.setDuration(200);
+            mover.start();
+            isGameSettingFragmentOpen = !isGameSettingFragmentOpen;
         });
     }
 

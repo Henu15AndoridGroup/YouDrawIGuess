@@ -35,5 +35,10 @@
     <string name="send">发送</string>
     <string name="colon">：</string>
     <string name="now_not_have_new_mes">暂没有新消息</string>
+    <string name="painter">画笔</string>
+    <string name="eraser">橡皮</string>
+    <string name="thick">粗</string>
+    <string name="normal">正常</string>
+    <string name="thin">细</string>
 
 </resources>

@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
 
 public class CleanEditText extends AppCompatEditText {
 	
