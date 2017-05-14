@@ -40,6 +40,8 @@ public class MyWebSocketClient extends WebSocketClient {
     private Activity mActivity;
     private StringBuilder frameValue = new StringBuilder();
 
+    private List<Chat> mChatList = new ArrayList<>();
+
     public MyWebSocketClient(URI serverURI, Map<String, String> header, Activity activity) {
         super(serverURI, new Draft_17(), header, 12000);
         this.mActivity = activity;
@@ -61,7 +63,7 @@ public class MyWebSocketClient extends WebSocketClient {
         } catch (InvalidDataException e) {
             e.printStackTrace();
         }
-        if(frame.isFin()) {
+        if (frame.isFin()) {
             onMessage(frameValue.toString());
             frameValue = new StringBuilder();
         }
@@ -77,13 +79,10 @@ public class MyWebSocketClient extends WebSocketClient {
                 case NONE:
                     break;
                 case PLAYER_CHANGE:
-                    Integer playerNum = JsonUtils.fromJson(data, Integer.class);
-                    mActivity.runOnUiThread(() -> ((GameActivity) mActivity).setPlayerNumber(playerNum));
-                    Log.d("webSocket", "Player number: " + playerNum);
+                    receiverPlayerNumber(data);
                     break;
                 case DRAW:
-                    Step step = JsonUtils.fromJson(data, Step.class);
-                    mActivity.runOnUiThread(() -> mPaintView.refreshPath(step));
+                    receiveDrawMessage(data);
                     break;
                 case START:
                     break;
@@ -91,15 +90,10 @@ public class MyWebSocketClient extends WebSocketClient {
                     mPaintView.setToMe(true);
                     break;
                 case RESUME:
-                    Type stepListType = new TypeToken<ArrayList<Step>>() {
-                    }.getType();
-                    List<Step> stepList = JsonUtils.fromJson(data, stepListType);
-                    mActivity.runOnUiThread(() -> mPaintView.refreshPath(stepList));
+                    receiveResumeMessage(data);
                     break;
                 case CHAT:
-                    Chat chat = JsonUtils.fromJson(data, Chat.class);
-                    //TODO 每次的聊天信息会在此处转化为Chat对象，使用链表将其存储
-                    mActivity.runOnUiThread(() -> ((GameActivity) mActivity).setPlayerMessage(chat.getUsername() + ": " + chat.getContent()));
+                    receiveChatMessage(data);
                     break;
                 default:
                     break;
@@ -117,6 +111,38 @@ public class MyWebSocketClient extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
         Log.d("webSocket", "error: " + ex.getMessage());
+    }
+
+
+    private void receiveChatMessage(JsonElement data) {
+        Chat chat = JsonUtils.fromJson(data, Chat.class);
+        mChatList.add(chat);
+        mActivity.runOnUiThread(() -> {
+            ((GameActivity) mActivity).setPlayerMessage(chat.getUsername() + ": " + chat.getContent());
+            ((GameActivity) mActivity).notifyChatAdd();
+        });
+    }
+
+    private void receiveResumeMessage(JsonElement data) {
+        Type stepListType = new TypeToken<ArrayList<Step>>() {
+        }.getType();
+        List<Step> stepList = JsonUtils.fromJson(data, stepListType);
+        mActivity.runOnUiThread(() -> mPaintView.refreshPath(stepList));
+    }
+
+    private void receiveDrawMessage(JsonElement data) {
+        Step step = JsonUtils.fromJson(data, Step.class);
+        mActivity.runOnUiThread(() -> mPaintView.refreshPath(step));
+    }
+
+    private void receiverPlayerNumber(JsonElement data) {
+        Integer playerNum = JsonUtils.fromJson(data, Integer.class);
+        mActivity.runOnUiThread(() -> ((GameActivity) mActivity).setPlayerNumber(playerNum));
+        Log.d("webSocket", "Player number: " + playerNum);
+    }
+
+    public List<Chat> getChatList() {
+        return mChatList;
     }
 
     public void setPaintView(PaintView paintView) {

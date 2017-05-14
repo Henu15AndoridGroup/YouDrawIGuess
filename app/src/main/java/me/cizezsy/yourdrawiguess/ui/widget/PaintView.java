@@ -75,7 +75,6 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 mPath.moveTo(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-
                 step.setType(1);
                 mPath.lineTo(x, y);
                 break;

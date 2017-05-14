@@ -33,5 +33,7 @@
     <string name="please_enter_your_username">请输入你的用户名</string>
     <string name="send_message">发送信息</string>
     <string name="send">发送</string>
+    <string name="colon">：</string>
+    <string name="now_not_have_new_mes">暂没有新消息</string>
 
 </resources>

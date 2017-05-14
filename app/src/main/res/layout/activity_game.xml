@@ -26,9 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:text="@string/now_not_have_new_mes"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            tools:text="0"
             tools:ignore="RelativeOverlap"/>
     </RelativeLayout>
 
@@ -49,14 +49,14 @@
         <me.cizezsy.yourdrawiguess.ui.widget.CleanEditText
             android:id="@+id/et_chat_message"
             style="@style/login_edit_style"
-            android:hint="@string/send_message"
             android:layout_toStartOf="@+id/btn_send_chat_mes"
+            android:hint="@string/send_message"
             android:inputType="text"
             />
 
         <Button
-            style="@android:style/Widget.Material.Button"
             android:id="@+id/btn_send_chat_mes"
+            style="@android:style/Widget.Material.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -64,6 +64,17 @@
             android:text="@string/send"
             />
     </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_layout"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_message"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/rl_game_header_info"
+        android:layout_marginEnd="-200dp"
+        android:background="@drawable/custom_background_with_border"
+        />
 
     <ProgressBar
         android:id="@+id/pb_game"

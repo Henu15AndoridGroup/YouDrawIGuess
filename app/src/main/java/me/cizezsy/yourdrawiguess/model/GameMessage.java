@@ -4,11 +4,15 @@ package me.cizezsy.yourdrawiguess.model;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 public class GameMessage {
     @SerializedName("type")
     private int type;
     @SerializedName("data")
     private JsonElement data;
+    @SerializedName("time")
+    private Date time;
 
     public int getType() {
         return type;
@@ -24,5 +28,13 @@ public class GameMessage {
 
     public void setData(JsonElement data) {
         this.data = data;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

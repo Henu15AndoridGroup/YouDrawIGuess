@@ -1,13 +1,23 @@
 package me.cizezsy.yourdrawiguess.ui.activity;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -24,6 +34,7 @@ import me.cizezsy.yourdrawiguess.model.PlayerMessage;
 import me.cizezsy.yourdrawiguess.model.User;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
+import me.cizezsy.yourdrawiguess.ui.fragment.ChatFragment;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
@@ -37,21 +48,21 @@ public class GameActivity extends AppCompatActivity {
 
     @BindView(R.id.pv_main)
     PaintView mPaintView;
-
     @BindView(R.id.pb_game)
     ProgressBar mProgressBar;
-
     @BindView(R.id.tv_player_num)
     TextView mPlayerTv;
-
     @BindView(R.id.tv_player_mes)
     TextView mMessageTv;
-
     @BindView(R.id.et_chat_message)
     CleanEditText mChatEt;
-
     @BindView(R.id.btn_send_chat_mes)
     Button mMessageBtn;
+    @BindView(R.id.fragment_layout)
+    FrameLayout mChatFragmentContainer;
+    Fragment mChatFragment;
+
+    private boolean isChatFragmentOpen = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +73,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void init() {
-
         List<Cookie> cookieList = YdigRetrofit.cookieStore;
         StringBuilder sb = new StringBuilder();
         for (Cookie c : cookieList) {
@@ -77,6 +87,13 @@ public class GameActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.VISIBLE);
         client.connect();
 
+        FragmentManager fm = getSupportFragmentManager();
+        mChatFragment = fm.findFragmentById(R.id.fragment_layout);
+        if (mChatFragment == null) {
+            mChatFragment = new ChatFragment();
+            fm.beginTransaction().add(R.id.fragment_layout, mChatFragment).commit();
+        }
+
         mMessageBtn.setOnClickListener(v -> {
             String chatMes = mChatEt.getText().toString();
             if (TextUtils.isEmpty(chatMes))
@@ -89,18 +106,66 @@ public class GameActivity extends AppCompatActivity {
             mChatEt.setText("");
             new Thread(() -> client.send(JsonUtils.toJson(message))).start();
         });
+
+        mMessageTv.setOnClickListener(v -> {
+            if (mChatFragment == null || mChatFragmentContainer == null)
+                return;
+            ObjectAnimator mover;
+            if (isChatFragmentOpen) {
+                mover = ObjectAnimator.ofFloat(mChatFragmentContainer, "translationX", 0.0f, -mChatFragmentContainer.getWidth());
+            } else {
+                mover = ObjectAnimator.ofFloat(mChatFragmentContainer, "translationX", 0.0f, mChatFragmentContainer.getWidth());
+
+            }
+            mover.setDuration(200);
+            mover.start();
+            isChatFragmentOpen = !isChatFragmentOpen;
+//            float animationDirection;
+//            if (isChatFragmentOpen) {
+//                animationDirection = 1f;
+//            } else {
+//                animationDirection = -1f;
+//            }
+//
+//            TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0f,
+//                    Animation.RELATIVE_TO_SELF, animationDirection,
+//                    Animation.RELATIVE_TO_SELF, 0f,
+//                    Animation.RELATIVE_TO_SELF, 0f);
+//            animation.setDuration(200);
+//            animation.setFillAfter(true);
+//            animation.setAnimationListener(new Animation.AnimationListener() {
+//                @Override
+//                public void onAnimationStart(Animation animation) {
+//                }
+//
+//                @Override
+//                public void onAnimationEnd(Animation animation) {
+//                    mChatFragmentContainer.clearAnimation();
+//                    RelativeLayout.LayoutParams params
+//                            = ((RelativeLayout.LayoutParams) mChatFragmentContainer.getLayoutParams());
+//                    params.rightMargin = params.rightMargin + (isChatFragmentOpen ? -params.width : params.width);
+//                    mChatFragmentContainer.setLayoutParams(params);
+//                }
+//
+//                @Override
+//                public void onAnimationRepeat(Animation animation) {
+//                }
+//            });
+//
+//            mChatFragmentContainer.clearAnimation();
+//            mChatFragmentContainer.setAnimation(animation);
+//
+//            animation.startNow();
+//            isChatFragmentOpen = !isChatFragmentOpen;
+        });
     }
 
 
-    //TODO 退出游戏时的销毁逻辑
     @Override
     protected void onStop() {
         super.onStop();
         client.close();
     }
-
-    //TODO 监听Back键事件， 弹出对话框，拦截退出请求。
-
 
     @Override
     public void onBackPressed() {
@@ -121,5 +186,13 @@ public class GameActivity extends AppCompatActivity {
 
     public void setPlayerMessage(String message) {
         mMessageTv.setText(message);
+    }
+
+    public List<Chat> getChatList() {
+        return client.getChatList();
+    }
+
+    public void notifyChatAdd() {
+        ((ChatFragment) mChatFragment).notifyChatAdd();
     }
 }
