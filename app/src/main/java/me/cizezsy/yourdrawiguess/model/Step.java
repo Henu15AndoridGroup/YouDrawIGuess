@@ -9,6 +9,7 @@ public class Step {
     private float deviceHeight;
     private float textSize;
     private int color;
+    private long time = System.nanoTime();
 
     public float getX() {
         return x;
@@ -64,5 +65,13 @@ public class Step {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long timeStamp) {
+        this.time = timeStamp;
     }
 }

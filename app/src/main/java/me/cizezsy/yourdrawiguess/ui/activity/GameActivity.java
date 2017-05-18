@@ -216,4 +216,12 @@ public class GameActivity extends AppCompatActivity {
     public void notifyChatAdd() {
         ((ChatFragment) mChatFragment).notifyChatAdd();
     }
+
+    public void setPaintColor(int color) {
+        mPaintView.setColor(color);
+    }
+
+    public void setPaintStrokeWidth(float width) {
+        mPaintView.setStrokeWidth(width);
+    }
 }

@@ -10,8 +10,13 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import me.cizezsy.yourdrawiguess.model.PlayerMessage;
@@ -19,19 +24,29 @@ import me.cizezsy.yourdrawiguess.model.Step;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
-//绘图view
 public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+
+    public static final float THICK_WIDTH = 30;
+    public static final float NORMAL_WIDTH = 20;
+    public static final float THIN_WIDTH = 10;
 
     private SurfaceHolder mSurfaceHolder;
     private Canvas mCanvas;
-    private Paint mPaint = new Paint();
     private boolean startDraw;
-    private Path mPath = new Path();
+
+    private Path mNetPath = new Path();
+    private Path mNaivePath = new Path();
+    private Paint mNetPaint = new Paint();
+    private Paint mNaivePaint = new Paint();
+
+    private ConcurrentSkipListMap<Long, PathWithPaint> mTimeAndPathWithPaintMap = new ConcurrentSkipListMap<>();
+
+
 
     private boolean isToMe = true;
-
     private MyWebSocketClient client;
     private List<Step> steps = new ArrayList<>();
+
     private volatile LinkedBlockingQueue<Step> mStepQueue = new LinkedBlockingQueue<>();
 
 
@@ -47,6 +62,16 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         setFocusableInTouchMode(true);
         setKeepScreenOn(true);
         startSendStepTask();
+
+        mNetPaint.setStyle(Paint.Style.STROKE);
+        mNetPaint.setColor(Color.BLACK);
+        mNetPaint.setStrokeWidth(20);
+
+        mNaivePaint.setStyle(Paint.Style.STROKE);
+        mNaivePaint.setColor(Color.BLACK);
+        mNaivePaint.setStrokeWidth(NORMAL_WIDTH);
+
+
     }
 
 
@@ -66,19 +91,22 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
         step.setDeviceHeight(getHeight());
         step.setDeviceWidth(getWidth());
-        step.setColor(mPaint.getColor());
-        step.setTextSize(mPaint.getTextSize());
+        step.setColor(mNaivePaint.getColor());
+        step.setTextSize(mNaivePaint.getStrokeWidth());
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 step.setType(0);
-                mPath.moveTo(x, y);
+                mNaivePath.moveTo(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 step.setType(1);
-                mPath.lineTo(x, y);
+                mNaivePath.lineTo(x, y);
                 break;
             case MotionEvent.ACTION_UP:
+                step.setType(2);
+                mTimeAndPathWithPaintMap.put(step.getTime(), new PathWithPaint(mNaivePath, mNaivePaint));
+                mNaivePath = new Path();
                 break;
         }
 
@@ -91,11 +119,12 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         try {
             mCanvas = mSurfaceHolder.lockCanvas();
             mCanvas.drawColor(Color.WHITE);
-            mPaint.setStyle(Paint.Style.STROKE);
-
-            mPaint.setColor(Color.BLACK);
-            mPaint.setStrokeWidth(20);
-            mCanvas.drawPath(mPath, mPaint);
+            for(Map.Entry<Long, PathWithPaint> entry : mTimeAndPathWithPaintMap.entrySet()) {
+                PathWithPaint pathWithPaint = entry.getValue();
+                mCanvas.drawPath(pathWithPaint.path, pathWithPaint.paint);
+            }
+            mCanvas.drawPath(mNetPath, mNetPaint);
+            mCanvas.drawPath(mNaivePath, mNaivePaint);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,14 +164,32 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
     }
 
     public void refreshPath(Step step) {
-        steps.add(step);
         float x = (getWidth() / step.getDeviceWidth()) * step.getX();
         float y = (getHeight() / step.getDeviceHeight()) * step.getY();
+        step.setX(x);
+        step.setY(y);
+        step.setDeviceWidth(getWidth());
+        step.setDeviceHeight(getHeight());
+        steps.add(step);
+
+        if (step.getColor() != mNetPaint.getColor()
+                || step.getTextSize() != mNetPaint.getStrokeWidth()) {
+            //mTimeAndPathWithPaintMap.put(step.getTime(), new PathWithPaint(mNetPath, mNetPaint));
+            Paint tempPaint = new Paint();
+            tempPaint.setStyle(mNetPaint.getStyle());
+            tempPaint.setStrokeWidth(step.getTextSize());
+            tempPaint.setColor(step.getColor());
+            mNetPaint = tempPaint;
+            //mNetPath = new Path();
+        }
 
         if (step.getType() == 0) {
-            mPath.moveTo(x, y);
+            mNetPath.moveTo(x, y);
         } else if (step.getType() == 1) {
-            mPath.lineTo(x, y);
+            mNetPath.lineTo(x, y);
+        } else if(step.getType() == 2) {
+            mTimeAndPathWithPaintMap.put(System.nanoTime(), new PathWithPaint(mNetPath, mNetPaint));
+            mNetPath = new Path();
         }
     }
 
@@ -165,7 +212,14 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
                     Step step = mStepQueue.take();
                     PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.DRAW, step);
                     String json = JsonUtils.toJson(message);
-                    client.send(json);
+                    try {
+                        if(!client.getConnection().isOpen()) {
+                            client.connect();
+                        }
+                        client.send(json);
+                    } catch (WebsocketNotConnectedException e) {
+                        e.printStackTrace();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -173,4 +227,36 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         }).start();
     }
 
+
+    public void setColor(int color) {
+        //PathWithPaint pathWithPaint = new PathWithPaint(mNaivePath, mNaivePaint);
+        //mTimeAndPathWithPaintMap.put(System.currentTimeMillis(), pathWithPaint);
+        Paint tempPaint = new Paint();
+        tempPaint.setColor(color);
+        tempPaint.setStrokeWidth(mNaivePaint.getStrokeWidth());
+        tempPaint.setStyle(mNaivePaint.getStyle());
+        mNaivePaint = tempPaint;
+     //   mNaivePath = new Path();
+    }
+
+    public void setStrokeWidth(float width) {
+        //PathWithPaint pathWithPaint = new PathWithPaint(mNaivePath, mNaivePaint);
+       // mTimeAndPathWithPaintMap.put(System.currentTimeMillis(), pathWithPaint);
+        Paint tempPaint = new Paint();
+        tempPaint.setColor(mNaivePaint.getColor());
+        tempPaint.setStrokeWidth(width);
+        tempPaint.setStyle(mNaivePaint.getStyle());
+        mNaivePaint = tempPaint;
+       // mNaivePath = new Path();
+    }
+
+    private class PathWithPaint {
+        Path path;
+        Paint paint;
+
+        public PathWithPaint(Path path, Paint paint) {
+            this.path = path;
+            this.paint = paint;
+        }
+    }
 }

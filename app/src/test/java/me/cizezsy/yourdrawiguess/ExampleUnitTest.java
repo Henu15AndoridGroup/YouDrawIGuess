@@ -16,12 +16,12 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
     @Test
     public void addition_isCorrect() throws Exception {
-        Chat chat = new Chat();
-        chat.setContent("asd");
-        chat.setUsername("asd");
-        String json = JsonUtils.toJson(new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chat));
+        Step step = new Step();
+        PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.DRAW, step);
+        String json = JsonUtils.toJson(message);
         System.out.println(json);
     }
 }

@@ -11,16 +11,30 @@
         android:orientation="horizontal">
 
         <RadioButton
+            android:id="@+id/rb_paint"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/painter"/>
+            android:checked="true"
+            android:text="@string/black"/>
 
         <RadioButton
+            android:id="@+id/rb_eraser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/eraser"
-            >
-        </RadioButton>
+            />
+        <RadioButton
+            android:id="@+id/rb_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/red"
+            />
+        <RadioButton
+            android:id="@+id/rb_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/yellow"
+            />
     </RadioGroup>
 
     <RadioGroup
@@ -30,17 +44,21 @@
         android:orientation="horizontal">
 
         <RadioButton
+            android:id="@+id/rb_thick_width"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/thick"/>
 
         <RadioButton
+            android:id="@+id/rb_normal_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="@string/normal">
         </RadioButton>
 
         <RadioButton
+            android:id="@+id/rb_thin_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/thin">
