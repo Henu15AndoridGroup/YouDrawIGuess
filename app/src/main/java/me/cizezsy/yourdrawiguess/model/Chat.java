@@ -4,6 +4,8 @@ public class Chat {
     private String username;
     private String content;
 
+    private transient Type type = Type.USER;
+
     public String getUsername() {
         return username;
     }
@@ -18,5 +20,17 @@ public class Chat {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public enum Type {
+        SYSTEM, USER
     }
 }

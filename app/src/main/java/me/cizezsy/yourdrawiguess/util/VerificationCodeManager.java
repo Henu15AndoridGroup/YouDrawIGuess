@@ -78,7 +78,7 @@ public class VerificationCodeManager {
 				.subscribeOn(Schedulers.io())
 				.subscribe(message -> {
                     if (message.getStatusCode() != 200) {
-                        ToastUtils.showShort(mContext, "获取验证码失败" + message.getData());
+                        ToastUtils.showShort(mContext, "获取验证码失败" + message.getData().toString());
                     }
                 }, throwable -> ToastUtils.showShort(mContext, "获取验证码失败" + throwable.getMessage()));
 	}

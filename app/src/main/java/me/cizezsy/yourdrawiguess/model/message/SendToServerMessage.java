@@ -1,13 +1,13 @@
-package me.cizezsy.yourdrawiguess.model;
+package me.cizezsy.yourdrawiguess.model.message;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PlayerMessage<T> {
+public class SendToServerMessage<T> {
 
     private Type type;
     private T data;
 
-    public PlayerMessage(Type type, T data) {
+    public SendToServerMessage(Type type, T data) {
         this.type = type;
         this.data = data;
     }
@@ -32,7 +32,9 @@ public class PlayerMessage<T> {
         @SerializedName("1")
         DRAW,
         @SerializedName("2")
-        MESSAGE
+        MESSAGE,
+        @SerializedName("3")
+        PHRASE,
     }
 
 

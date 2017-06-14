@@ -4,8 +4,8 @@ package me.cizezsy.yourdrawiguess.model;
 public class Room {
 
     private Integer roomId;
-    private Integer maxPeople;
-    private Integer currPeople;
+    private Integer maxPlayer;
+    private Integer currentPlayer;
 
     public Integer getRoomId() {
         return roomId;
@@ -15,19 +15,19 @@ public class Room {
         this.roomId = roomId;
     }
 
-    public Integer getMaxPeople() {
-        return maxPeople;
+    public Integer getMaxPlayer() {
+        return maxPlayer;
     }
 
-    public void setMaxPeople(Integer maxPeople) {
-        this.maxPeople = maxPeople;
+    public void setMaxPlayer(Integer maxPlayer) {
+        this.maxPlayer = maxPlayer;
     }
 
-    public Integer getCurrPeople() {
-        return currPeople;
+    public Integer getCurrentPlayer() {
+        return currentPlayer;
     }
 
-    public void setCurrPeople(Integer currPeople) {
-        this.currPeople = currPeople;
+    public void setCurrentPlayer(Integer currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 }

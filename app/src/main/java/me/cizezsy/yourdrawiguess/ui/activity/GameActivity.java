@@ -1,6 +1,7 @@
 package me.cizezsy.yourdrawiguess.ui.activity;
 
 import android.animation.ObjectAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -23,12 +25,14 @@ import butterknife.ButterKnife;
 import me.cizezsy.yourdrawiguess.MyApplication;
 import me.cizezsy.yourdrawiguess.R;
 import me.cizezsy.yourdrawiguess.model.Chat;
-import me.cizezsy.yourdrawiguess.model.PlayerMessage;
+import me.cizezsy.yourdrawiguess.model.Phrase;
+import me.cizezsy.yourdrawiguess.model.message.SendToServerMessage;
 import me.cizezsy.yourdrawiguess.model.User;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.net.YdigRetrofit;
 import me.cizezsy.yourdrawiguess.ui.fragment.ChatFragment;
 import me.cizezsy.yourdrawiguess.ui.fragment.GameSettingFragment;
+import me.cizezsy.yourdrawiguess.ui.fragment.PhraseSelectFragment;
 import me.cizezsy.yourdrawiguess.ui.widget.CleanEditText;
 import me.cizezsy.yourdrawiguess.ui.widget.PaintView;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
@@ -36,7 +40,7 @@ import okhttp3.Cookie;
 
 public class GameActivity extends AppCompatActivity {
 
-    private static final String SOCKET_SERVER_URL = "ws://115.159.49.186:8080/ydig2/draw";
+    private static final String SOCKET_SERVER_URL = "ws://115.159.49.186:8080/youdrawiguess/draw";
 
     private MyWebSocketClient client;
 
@@ -48,6 +52,8 @@ public class GameActivity extends AppCompatActivity {
     TextView mPlayerTv;
     @BindView(R.id.tv_player_mes)
     TextView mMessageTv;
+    @BindView(R.id.tv_game_info)
+    TextView mGameInfoTv;
     @BindView(R.id.et_chat_message)
     CleanEditText mChatEt;
     @BindView(R.id.btn_send_chat_mes)
@@ -72,15 +78,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void init() {
+        long roomId = getIntent().getIntExtra("roomId", 0);
+
         List<Cookie> cookieList = YdigRetrofit.cookieStore;
-        StringBuilder sb = new StringBuilder();
-        for (Cookie c : cookieList) {
-            sb.append(c.toString());
-        }
+
         Map<String, String> cookie = new HashMap<>();
-        cookie.put("Cookie", sb.toString());
+        cookie.put("Cookie", cookieList.get(0).toString());
         client = new MyWebSocketClient(URI.create(SOCKET_SERVER_URL), cookie, this);
 
+        if (roomId != 0L)
+            mPaintView.setToMe(false);
         mPaintView.setClient(client);
         mPaintView.setEnabled(false);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -108,7 +115,7 @@ public class GameActivity extends AppCompatActivity {
             User user = MyApplication.getUser();
             chat.setUsername(user == null ? "未知" : user.getUsername());
             chat.setContent(chatMes);
-            PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.MESSAGE, chat);
+            SendToServerMessage message = new SendToServerMessage<>(SendToServerMessage.Type.MESSAGE, chat);
             mChatEt.setText("");
             new Thread(() -> client.send(JsonUtils.toJson(message))).start();
         });
@@ -179,6 +186,16 @@ public class GameActivity extends AppCompatActivity {
             mover.start();
             isGameSettingFragmentOpen = !isGameSettingFragmentOpen;
         });
+        mGameInfoTv.setText("等待开始");
+    }
+
+    public void startSelectPhrase(List<Phrase> phraseList) {
+        PhraseSelectFragment.newInstance(phraseList, this).show(getSupportFragmentManager(), "phrase");
+    }
+
+    public void selectPhrase(Phrase phrase) {
+        SendToServerMessage<Phrase> message = new SendToServerMessage<>(SendToServerMessage.Type.PHRASE, phrase);
+        client.send(JsonUtils.toJson(message));
     }
 
 
@@ -202,11 +219,24 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setPlayerNumber(int peopleNumber) {
-        mPlayerTv.setText("当前游戏人数 :" + peopleNumber);
+        mPlayerTv.setText(String.format(Locale.CHINA, "当前游戏人数%d", peopleNumber));
     }
 
-    public void setPlayerMessage(String message) {
-        mMessageTv.setText(message);
+    public void setPlayerMessage(Chat chat) {
+        String content = String.format(Locale.CHINA, "%s：%s", chat.getUsername(), chat.getContent());
+        if (content.length() > 18) {
+            content = content.substring(0, 18) + "....";
+        }
+        if (chat.getType() == Chat.Type.SYSTEM) {
+            mMessageTv.setTextColor(Color.RED);
+        } else {
+            mMessageTv.setTextColor(Color.BLACK);
+        }
+        mMessageTv.setText(content);
+    }
+
+    public void setGameInfo(String info) {
+        mGameInfoTv.setText(info);
     }
 
     public List<Chat> getChatList() {

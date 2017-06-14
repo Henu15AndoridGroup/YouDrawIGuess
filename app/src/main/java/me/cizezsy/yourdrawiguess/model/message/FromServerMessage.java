@@ -1,11 +1,11 @@
-package me.cizezsy.yourdrawiguess.model;
+package me.cizezsy.yourdrawiguess.model.message;
 
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 
-public class GameMessage {
+public class FromServerMessage {
     @SerializedName("type")
     private int type;
     @SerializedName("data")

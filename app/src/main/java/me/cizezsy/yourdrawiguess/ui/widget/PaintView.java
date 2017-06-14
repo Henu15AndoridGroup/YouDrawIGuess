@@ -15,12 +15,11 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import me.cizezsy.yourdrawiguess.model.PlayerMessage;
 import me.cizezsy.yourdrawiguess.model.Step;
+import me.cizezsy.yourdrawiguess.model.message.SendToServerMessage;
 import me.cizezsy.yourdrawiguess.net.MyWebSocketClient;
 import me.cizezsy.yourdrawiguess.util.JsonUtils;
 
@@ -40,7 +39,6 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
     private Paint mNaivePaint = new Paint();
 
     private ConcurrentSkipListMap<Long, PathWithPaint> mTimeAndPathWithPaintMap = new ConcurrentSkipListMap<>();
-
 
 
     private boolean isToMe = true;
@@ -119,7 +117,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         try {
             mCanvas = mSurfaceHolder.lockCanvas();
             mCanvas.drawColor(Color.WHITE);
-            for(Map.Entry<Long, PathWithPaint> entry : mTimeAndPathWithPaintMap.entrySet()) {
+            for (Map.Entry<Long, PathWithPaint> entry : mTimeAndPathWithPaintMap.entrySet()) {
                 PathWithPaint pathWithPaint = entry.getValue();
                 mCanvas.drawPath(pathWithPaint.path, pathWithPaint.paint);
             }
@@ -187,7 +185,7 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
             mNetPath.moveTo(x, y);
         } else if (step.getType() == 1) {
             mNetPath.lineTo(x, y);
-        } else if(step.getType() == 2) {
+        } else if (step.getType() == 2) {
             mTimeAndPathWithPaintMap.put(System.nanoTime(), new PathWithPaint(mNetPath, mNetPaint));
             mNetPath = new Path();
         }
@@ -207,13 +205,13 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
     public void startSendStepTask() {
         new Thread(() -> {
-            while (true) {
+            while (isToMe) {
                 try {
                     Step step = mStepQueue.take();
-                    PlayerMessage message = new PlayerMessage<>(PlayerMessage.Type.DRAW, step);
+                    SendToServerMessage<Step> message = new SendToServerMessage<>(SendToServerMessage.Type.DRAW, step);
                     String json = JsonUtils.toJson(message);
                     try {
-                        if(!client.getConnection().isOpen()) {
+                        if (!client.getConnection().isOpen()) {
                             client.connect();
                         }
                         client.send(json);
@@ -236,18 +234,18 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         tempPaint.setStrokeWidth(mNaivePaint.getStrokeWidth());
         tempPaint.setStyle(mNaivePaint.getStyle());
         mNaivePaint = tempPaint;
-     //   mNaivePath = new Path();
+        //   mNaivePath = new Path();
     }
 
     public void setStrokeWidth(float width) {
         //PathWithPaint pathWithPaint = new PathWithPaint(mNaivePath, mNaivePaint);
-       // mTimeAndPathWithPaintMap.put(System.currentTimeMillis(), pathWithPaint);
+        // mTimeAndPathWithPaintMap.put(System.currentTimeMillis(), pathWithPaint);
         Paint tempPaint = new Paint();
         tempPaint.setColor(mNaivePaint.getColor());
         tempPaint.setStrokeWidth(width);
         tempPaint.setStyle(mNaivePaint.getStyle());
         mNaivePaint = tempPaint;
-       // mNaivePath = new Path();
+        // mNaivePath = new Path();
     }
 
     private class PathWithPaint {

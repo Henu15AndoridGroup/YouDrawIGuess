@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class GameSettingFragment extends Fragment {
     @BindView(R.id.rb_red)
     RadioButton mRedRb;
     @BindView(R.id.rb_yellow)
-    RadioButton mYelloRb;
+    RadioButton mYellowRb;
 
     @BindView(R.id.rb_normal_width)
     RadioButton mNormalWidthRb;
@@ -54,7 +53,7 @@ public class GameSettingFragment extends Fragment {
         mRedRb.setOnClickListener(v -> {
             ((GameActivity) getActivity()).setPaintColor(Color.RED);
         });
-        mYelloRb.setOnClickListener(v -> {
+        mYellowRb.setOnClickListener(v -> {
             ((GameActivity) getActivity()).setPaintColor(Color.YELLOW);
         });
         mNormalWidthRb.setOnClickListener(v -> {

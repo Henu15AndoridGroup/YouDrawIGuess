@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class YdigRetrofit {
     private final YdigRetrofitApi mService;
 
-    public static final String BASE_URL = "http://115.159.49.186:8080/ydig2/";
+    public static final String BASE_URL = "http://115.159.49.186:8080/youdrawiguess/";
     public static final List<Cookie> cookieStore = new ArrayList<>();
 
     public YdigRetrofit() {

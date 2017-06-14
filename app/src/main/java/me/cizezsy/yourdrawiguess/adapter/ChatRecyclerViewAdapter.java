@@ -1,6 +1,7 @@
 package me.cizezsy.yourdrawiguess.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,13 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
     @Override
     public void onBindViewHolder(MyViewHolder viewHolder, int i) {
         Chat chat = mChatList.get(i);
+        if (chat.getType() == Chat.Type.SYSTEM) {
+            viewHolder.mChatPlayerNameTv.setTextColor(Color.RED);
+            viewHolder.mChatContentTv.setTextColor(Color.RED);
+        } else {
+            viewHolder.mChatPlayerNameTv.setTextColor(Color.BLACK);
+            viewHolder.mChatContentTv.setTextColor(Color.BLACK);
+        }
         viewHolder.mChatPlayerNameTv.setText(chat.getUsername());
         viewHolder.mChatContentTv.setText(chat.getContent());
     }

@@ -88,7 +88,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
                     .subscribe(message -> {
                         mProgressBar.setVisibility(View.GONE);
                         if (message.getStatusCode() != 200) {
-                            ToastUtils.showShort(SignUpActivity.this, "注册失败" + message.getData());
+                            ToastUtils.showShort(SignUpActivity.this, "注册失败" + message.getData().toString());
                             return;
                         }
                         ToastUtils.showShort(SignUpActivity.this, "注册成功");
@@ -139,7 +139,7 @@ public class SignUpActivity extends Activity implements OnClickListener {
     }
 
     private void enterMainActivity() {
-        Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, RoomListActivity.class);
         startActivity(intent);
         finish();
     }

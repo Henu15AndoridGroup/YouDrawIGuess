@@ -68,7 +68,6 @@ public class LoginActivity extends Activity implements OnClickListener {
         String phone = phoneEdit.getText().toString();
         String password = passwordEdit.getText().toString();
         if (checkInput(phone, password)) {
-            //TODO 加密密码
             mProgressBar.setVisibility(View.VISIBLE);
             YdigRetrofitFactory.getService()
                     .login(phone, password)
@@ -77,11 +76,11 @@ public class LoginActivity extends Activity implements OnClickListener {
                     .subscribe(message -> {
                         mProgressBar.setVisibility(View.GONE);
                         if (message.getStatusCode() != 200) {
-                            ToastUtils.showShort(LoginActivity.this, "登录失败" + message.getData());
+                            ToastUtils.showShort(LoginActivity.this, "登录失败" + message.getData().toString());
                             return;
                         }
                         User user = new User();
-                        user.setUsername(message.getData());
+                        user.setUsername(message.getData().toString());
                         MyApplication.setUser(user);
                         enterMainActivity();
                     }, throwable -> {
@@ -138,7 +137,7 @@ public class LoginActivity extends Activity implements OnClickListener {
     }
 
     private void enterMainActivity() {
-        Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, RoomListActivity.class);
         startActivity(intent);
         finish();
     }
