@@ -248,6 +248,12 @@ public class PaintView extends SurfaceView implements SurfaceHolder.Callback, Ru
         // mNaivePath = new Path();
     }
 
+    public void reset() {
+        mTimeAndPathWithPaintMap.clear();
+        mStepQueue.clear();
+        steps.clear();
+    }
+
     private class PathWithPaint {
         Path path;
         Paint paint;

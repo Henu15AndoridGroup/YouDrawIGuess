@@ -150,8 +150,17 @@ public class MyWebSocketClient extends WebSocketClient {
                     }
                 };
                 new Timer().schedule(gameStopTask, 0, 1000);
-            } else
+            } else {
                 ((GameActivity) mActivity).setGameInfo(info);
+                Chat chat = new Chat();
+                chat.setUsername("系统");
+                chat.setContent(info);
+                chat.setType(Chat.Type.SYSTEM);
+                mChatList.add(chat);
+                mActivity.runOnUiThread(()->{
+                    ((GameActivity) mActivity).notifyChatAdd();
+                });
+            }
         });
     }
 
@@ -169,7 +178,6 @@ public class MyWebSocketClient extends WebSocketClient {
             ToastUtils.makeShortText("选择成功", mActivity);
             gameStopTask = new TimerTask() {
                 int time = 120;
-
                 @Override
                 public void run() {
                     mActivity.runOnUiThread(() ->
@@ -203,6 +211,7 @@ public class MyWebSocketClient extends WebSocketClient {
                     .setCancelable(false)
                     .create();
             alertDialog.show();
+            mPaintView.reset();
             ((GameActivity) mActivity).setPlayerMessage(chat);
             ((GameActivity) mActivity).notifyChatAdd();
             ((GameActivity) mActivity).setGameInfo("游戏结束");
